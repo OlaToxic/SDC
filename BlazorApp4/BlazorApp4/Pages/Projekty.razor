@@ -189,33 +189,7 @@
 
         var test = 1;
 
-        /*  string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
-          using var con = new SqlConnection(cs);
-          con.Open();
-
-          string sql = "SELECT * FROM Project";
-          using var cmd = new SqlCommand(sql, con);
-
-          using SqlDataReader rdr = cmd.ExecuteReader();
-
-          while (rdr.Read())
-          {
-              Projekt.Add(new SampleData()
-
-              {
-                  Id = rdr.GetInt32(0).ToString(),
-
-                  ProjektNazov = rdr.GetString(1),
-
-                  ProjektID = rdr.GetString(2),
-                  Hala1 = rdr.GetString(3),
-                  Hala2 = rdr.GetString(4),
-                  Hala3 = rdr.GetString(5),
-                  Dat = rdr.GetString(6),
-
-              }); ;
-          } */
+       
     }
 
     void AddProjekt()

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj": {}
+    "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj": {
+    "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
+        "projectUniqueName": "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
         "projectName": "BlazorApp4",
-        "projectPath": "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
+        "projectPath": "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
         "packagesPath": "C:\\Users\\MSI_GT72\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\obj\\",
+        "outputPath": "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",

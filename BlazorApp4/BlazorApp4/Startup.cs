@@ -19,7 +19,7 @@ using BlazorStrap;
 namespace BlazorApp4
 {
     public class Startup
-    {
+    {  
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

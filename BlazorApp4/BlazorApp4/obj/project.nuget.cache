@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "G9Zh+xN8P/BNn8LPvek/mvcd0AUpYskPUEZ0tCjNTRf3AUu33YQyCwpea9Ob6utEaLpbQ4zyVxZ5du8qCzZIPA==",
+  "dgSpecHash": "1kDPH7GP8s6UxrX/41SsFjmUfCuTwxCLI8YjjmRj8n1FJdSZDObZBfdgcJ7HkWy2oSVHHuFtf8e8pSKFrd7CFg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\MSI_GT72\\Desktop\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
+  "projectFilePath": "C:\\GitSDC\\SDC\\BlazorApp4\\BlazorApp4\\BlazorApp4.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\MSI_GT72\\.nuget\\packages\\blazorcomponentutilities\\1.6.0\\blazorcomponentutilities.1.6.0.nupkg.sha512",
     "C:\\Users\\MSI_GT72\\.nuget\\packages\\blazorstrap\\1.5.0-preview-02\\blazorstrap.1.5.0-preview-02.nupkg.sha512",
