@@ -1,0 +1,4 @@
+﻿<StaticWebAssets Version="1.0">
+  <ContentRoot BasePath="_content/BlazorStrap" Path="C:\Users\MSI_GT72\.nuget\packages\blazorstrap\1.5.0-preview-02\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/BlazorStrap.Extensions.TreeView" Path="C:\Users\MSI_GT72\.nuget\packages\blazorstrap.extensions.treeview\1.5.0-preview-02\build\..\staticwebassets\" />
+</StaticWebAssets>

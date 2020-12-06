@@ -1,0 +1,423 @@
+﻿@page "/Project"
+@using BlazorApp4.Data;
+
+@inject ApplicationDbContext context;
+
+<BSDataTable Items="Projekt" Context="sample" IsResponsive="true" IsStriped="true" @ref="SortableRef">
+    <HeaderTemplate>
+        <tr>
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Id"))" @onclick:preventDefault>#</a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("ProjektNazov"))" @onclick:preventDefault>Nazov Projektu </a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("ProjektID"))" @onclick:preventDefault>Identifikator</a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Hala1"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Hala2"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Hala3"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Dat"))" @onclick:preventDefault></a></th>
+
+        </tr>
+    </HeaderTemplate>
+
+    <ItemTemplate>
+
+        <th scope="row">@sample.Id</th>
+
+        <td>@sample.ProjektNazov</td>
+
+        <td>@sample.ProjektID</td>
+        <td>@sample.Hala1</td>
+        <td>@sample.Hala2</td>
+        <td>@sample.Hala3</td>
+        <td>@sample.Dat</td>
+
+        <td>
+            <!-- Edit the current forecast -->
+            <button class="btn btn-primary"
+                    @onclick="(() => EditUser(sample))">
+                Upravit Projekt
+            </button>
+        </td>
+    </ItemTemplate>
+
+</BSDataTable>
+@if (ShowPopup)
+{
+    <!-- This is the popup to create or edit a user -->
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Volba nadpisu -->
+                    @if (objProjekt.ProjektNazov != null)
+                    {
+                        <h3 class="modal-title">Editácia projektu</h3>
+                    }
+                    else
+                    {
+                        <h3 class="modal-title">Pridanie projektu</h3>
+                    }
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="ClosePopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <!-- Edit form for the current user -->
+                <div class="modal-body">
+                    <!-- uprava stareho projektu -->
+                    @if (objProjekt.ProjektNazov != "")
+                    {
+                        <p>@objProjekt.Id</p>
+                    }
+                    <!-- Pre pridanie noveho projektu -->
+                    @if (objProjekt.Id != 0)
+                    {
+                        <p>@objProjekt.ProjektNazov</p>
+                    }
+                    else
+
+                    {
+                        <h4><b>Názov Projektu :</b></h4>
+                        <input class="form-control" type="text"
+                               placeholder="Názov Projektu"
+                               @bind="objProjekt.ProjektNazov" />
+                    }
+                    <h4><b>Identifikator projektu :</b></h4>
+                    <input class="form-control" type="text"
+                           placeholder="Napr : AP 79- , AP 83- "
+                           @bind="objProjekt.ProjektID" />
+                    <h4><b>Umiestnenie projektu v hale :</b></h4>
+                    <select class="form-control"
+                            @bind="@Hala1">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <h5><b>Pripadne umiestnenie projektu aj v dalsej hale a rovnakeho identifikatora:</b></h5>
+                    <select class="form-control"
+                            @bind="@Hala2">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <h5><b>Pripadne umiestnenie projektu aj v dalsej hale a rovnakeho identifikatora :</b></h5>
+                    <select class="form-control"
+                            @bind="@Hala3">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <br /><br />
+                    <!-- Button to save the user -->
+                    <button class="btn btn-primary"
+                            @onclick="UlozProjekt">
+                        Ulož
+                    </button>
+                    <!-- Only show delete button if not a new record -->
+                    @if (objProjekt.ProjektNazov != null)
+                    {
+                        <!-- Button to delete the forecast -->
+                        <button class="btn btn-danger"
+                                //onclick ="DeleteUser">
+                            Zmazat konto
+                        </button>
+                    }
+                    <br />
+                    <span style="color:red">@strError</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<button class="btn btn-success" @onclick="AddProjekt">Pridaj nový projekt</button>
+
+
+@code
+{
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    string ADMINISTRATION_ROLE = "Administrators";
+
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+    public List<Project> Projekt { get; set; }
+    private BSDataTable<Project> SortableRef { get; set; }
+
+    Project objProjekt = new Project();
+    List<Project> ColProjekt = new List<Project>();
+    string Hala1 { get; set; } = "-";
+    string Hala2 { get; set; } = "-";
+    string Hala3 { get; set; } = "-";
+    // Options to display in the roles dropdown when editing a user
+    List<string> Options = new List<string>() { "SDC1 - Stará Hala", "SDC2 - Nová Hala", "ECS" };
+    // To hold any possible errors
+    string strError = "";
+    // To enable showing the Popup
+    bool ShowPopup = false;
+
+
+    async Task EditUser(Project sample)
+    {
+        // Set the selected user
+        // as the current user
+        objProjekt = sample;
+
+        ShowPopup = true;
+
+    }
+
+    protected override void OnInitialized() //Test
+    {
+
+        Projekt = new List<Project>();
+
+        Projekt = context.Project.ToList();
+
+        var test = 1;
+
+        /*  string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+          using var con = new SqlConnection(cs);
+          con.Open();
+
+          string sql = "SELECT * FROM Project";
+          using var cmd = new SqlCommand(sql, con);
+
+          using SqlDataReader rdr = cmd.ExecuteReader();
+
+          while (rdr.Read())
+          {
+              Projekt.Add(new SampleData()
+
+              {
+                  Id = rdr.GetInt32(0).ToString(),
+
+                  ProjektNazov = rdr.GetString(1),
+
+                  ProjektID = rdr.GetString(2),
+                  Hala1 = rdr.GetString(3),
+                  Hala2 = rdr.GetString(4),
+                  Hala3 = rdr.GetString(5),
+                  Dat = rdr.GetString(6),
+
+              }); ;
+          } */
+    }
+
+    void AddProjekt()
+    {
+        // Make new user
+        objProjekt = new Project();
+        //  objUser.PasswordHash = "*****";
+        // Set Id to blank so we know it is a new record
+        objProjekt.Id = 0;
+        // Open the Popup
+        ShowPopup = true;
+    }
+
+    async Task SaveUser()
+    {
+
+        string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        using var con = new SqlConnection(cs);
+        con.Open();
+
+        var query = "INSERT INTO cars(name, price) VALUES(@name, @price)";
+        using var cmd = new SqlCommand(query, con);
+
+        cmd.Parameters.Add(new SqlParameter("@name", SqlDbType.VarChar, 255)).Value = "BMW";
+        cmd.Parameters.Add("@price", SqlDbType.VarChar, 255).Value = "36600";
+        cmd.Prepare();
+
+        cmd.ExecuteNonQuery();
+        try
+        {
+            // Is this an existing user?
+            if (objProjekt.ProjektNazov != "")
+            {
+                // Get the user
+                //var user = await _UserManager.FindByIdAsync(objProjekt.ProjektNazov);
+                // Update Email
+                //user.Email = objUser.Email;
+                //user.UserName = objUser.UserName;
+                // Update the user
+                //await _UserManager.UpdateAsync(user);
+                // Only update password if the current value
+                // is not the default value
+                //if (objUser.PasswordHash != "*****")
+                //{
+                //var resetToken =
+                //await _UserManager.GeneratePasswordResetTokenAsync(user);
+                //var passworduser =
+                //await _UserManager.ResetPasswordAsync(
+                //user,
+                //resetToken,
+                //objUser.PasswordHash);
+                //if (!passworduser.Succeeded)
+                //{
+                //if (passworduser.Errors.FirstOrDefault() != null)
+                //{
+                //strError =
+                //passworduser
+                //.Errors
+                //.FirstOrDefault()
+                //.Description;
+                //}
+                //else
+                //{
+                //strError = "Pasword error";
+                //}
+                // Keep the popup opened
+                //return;
+                //}
+                //}
+                // Handle Roles
+                // Is user in administrator role?
+                //var UserResult =
+                //await _UserManager
+                //.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+                // Is Administrator role selected
+                // but user is not an Administrator?
+                //if (
+                //(CurrentUserRole == ADMINISTRATION_ROLE)
+                //&
+                //(!UserResult))
+                //{
+                // Put admin in Administrator role
+                //await _UserManager
+                //.AddToRoleAsync(user, ADMINISTRATION_ROLE);
+                //}
+                //else
+                //{
+                // Is Administrator role not selected
+                // but user is an Administrator?
+                //if ((CurrentUserRole != ADMINISTRATION_ROLE)
+                //&
+                //(UserResult))
+                //{
+                // Remove user from Administrator role
+                //await _UserManager
+                //.RemoveFromRoleAsync(user, ADMINISTRATION_ROLE);
+                //}
+                //}
+            }
+            //else
+            //{
+            // Insert new user
+            //var NewUser =
+            //new IdentityUser
+            //{
+            //UserName = objUser.UserName,
+            //Email = objUser.Email
+            //};
+            //var CreateResult =
+            //await _UserManager
+            //.CreateAsync(NewUser, objProjekt.ProjektID);
+            //if (!CreateResult.Succeeded)
+            //{
+            //if (CreateResult
+            //.Errors
+            //.FirstOrDefault() != null)
+            //{
+            //strError =
+            //CreateResult
+            //.Errors
+            //.FirstOrDefault()
+            //.Description;
+            //}
+            //else
+            //{
+            //strError = "Create error";
+            //}
+            // Keep the popup opened
+            //return;
+            //}
+            //else
+            //{
+            // Handle Roles
+            //if (CurrentUserRole == ADMINISTRATION_ROLE)
+            //{
+            // Put admin in Administrator role
+            //await _UserManager
+            //.AddToRoleAsync(NewUser, ADMINISTRATION_ROLE);
+            //}
+            //}
+            //}
+            // Close the Popup
+            ShowPopup = false;
+            // Refresh Users
+            //GetUsers();
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    void ClosePopup()
+    {
+        // Close the Popup
+        ShowPopup = false;
+    }
+
+
+
+    async Task UlozProjekt()  //Test
+    {
+        try
+        {
+            string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            using var con = new SqlConnection(cs);
+            con.Open();
+            var query = "INSERT INTO Projekty(ID_Projekt, ID_ProjektID, ID_Hala1, ID_Hala2, ID_Hala3, DatPrid) VALUES(@ID_Projekt, @ID_ProjektID, @ID_Hala1, @ID_Hala2, @ID_Hala3, @DatPrid)";
+            using var cmd = new SqlCommand(query, con);
+
+            if (objProjekt.Id == 0) // Novy prjekt / uprava stareho projektu
+            {
+                context.Add(new Project
+                {
+                    Id = objProjekt.Id,
+                    ProjektNazov= objProjekt.ProjektNazov,
+                    ProjektID= objProjekt.ProjektID,
+                    Hala1= objProjekt.Hala1,
+                    Hala2= objProjekt.Hala2,
+                    Hala3= objProjekt.Hala3,
+                    Dat = DateTime.Now.ToString()
+
+                }) ;
+
+                context.SaveChanges();
+
+            }
+            else // uprava stareho projektu
+            {
+
+
+            }
+            con.Close();
+            ShowPopup = false;
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+
+        Projekt = context.Project.ToList();
+    }
+
+
+}

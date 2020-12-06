@@ -1,0 +1,295 @@
+﻿@page "/zariadenia"
+
+<BSDataTable Items="Zariadenie" Context="sample" IsResponsive="true" IsStriped="true" @ref="SortableRef">
+    <HeaderTemplate>
+        <tr>
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Id"))" @onclick:preventDefault>#</a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Projekt"))" @onclick:preventDefault>Projekt</a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Zariadenie"))" @onclick:preventDefault>Popis Zariadenia</a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("ZarPopis"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Hala"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("Udrzbar"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("UdrzbaZastupca"))" @onclick:preventDefault></a></th>
+
+            <th align="center" scope="col"><a href="javascript:void(0)" @onclick="@(() => SortableRef.Sort("DatPridania"))" @onclick:preventDefault></a></th>
+
+        </tr>
+    </HeaderTemplate>
+
+    <ItemTemplate>
+
+        <th scope="row">@sample.Id</th>
+
+        <td>@sample.Projekt</td>
+
+        <td>@sample.Zariadenie</td>
+        <td>@sample.ZarPopis</td>
+        <td>@sample.Hala</td>
+        <td>@sample.Udrzbar</td>
+        <td>@sample.UdrzbaZastupca</td>
+        <td>@sample.DatPridania</td>
+
+        <td>
+            <!-- Edit the current forecast -->
+            <button class="btn btn-primary"
+                    //onclick="(() => UpravZariadenie(sample))">
+                Upravit Projekt
+            </button>
+        </td>
+    </ItemTemplate>
+
+</BSDataTable>
+
+@if (ShowPopup)
+{
+    <!-- This is the popup to create or edit a user -->
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Volba nadpisu -->
+                    @if (objZariadenie.Zariadenie != null)
+                    {
+                    <h3 class="modal-title">Editácia zariadenia</h3>
+                    }
+                    else
+                    {
+                        <h3 class="modal-title">Pridanie zariadenia</h3>
+                    }
+                    <!-- Button to close the popup -->
+                    <button type="button" class="close"
+                            @onclick="ClosePopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <!-- Edit form for the current user -->
+                <div class="modal-body">
+                    <!-- uprava stareho projektu -->
+                    @if (objZariadenie.Zariadenie != "")
+                    {
+                        <p>@objZariadenie.Id</p>
+                        <p>@objZariadenie.Zariadenie</p>
+                        <p>@objZariadenie.ZarPopis</p>
+                    }
+                    <!-- Pre pridanie noveho projektu -->
+                    @if (objZariadenie.Id != "")
+                    {
+                        <p>@objZariadenie.Zariadenie</p>
+                    }
+                    else
+
+                    {
+                        <h4><b>Vyber projekt kde bude zariadenie :</b></h4>
+                        <select class="form-control"
+                                @bind="@Hala1" @onfocusout="@ProjSele">
+                            @foreach (var option in Project)
+                            {
+                                <option value="@option">
+                                    @option
+                                </option>
+                            }
+                        </select>
+                        <h4><b>Názov zariadenia : @Projnazov  </b></h4>
+                        <input class="form-control" type="text"
+                               placeholder="Dopln názov zariadenia"
+                               @bind="objZariadenie.Zariadenie" />
+                    }
+                    <h4><b>Popis Zariadenia :</b></h4>
+                    <input class="form-control" type="text"
+                           placeholder="Napr : Nitovanie Distanzstuck, Montáž man. prevodov ...  "
+                           @bind="objZariadenie.ZarPopis" />
+                    <h4><b>Umiestnenie projektu v hale :</b></h4>
+                    <select class="form-control"
+                            @bind="@Hala1">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <h5><b>Pripadne umiestnenie projektu aj v dalsej hale a rovnakeho identifikatora:</b></h5>
+                    <select class="form-control"
+                            //bind ="Hala2">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <h5><b>Pripadne umiestnenie projektu aj v dalsej hale a rovnakeho identifikatora :</b></h5>
+                    <select class="form-control"
+                            //bind ="Hala3">
+                        @foreach (var option in Options)
+                        {
+                            <option value="@option">
+                                @option
+                            </option>
+                        }
+                    </select>
+                    <br /><br />
+                    <!-- Button to save the user -->
+                    <button class="btn btn-primary"
+                            //onclick ="UlozProjekt">
+                        Ulož
+                    </button>
+                    <!-- Only show delete button if not a new record -->
+                    @if (objZariadenie.Zariadenie != null)
+                    {
+                        <!-- Button to delete the forecast -->
+                        <button class="btn btn-danger"
+                                //onclick ="DeleteUser">
+                            Zmazat konto
+                        </button>
+                    }
+                    <br />
+                    <span style="color:red">@strError</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<button class="btn btn-success" @onclick="AddZariadenie">Pridaj nový projekt</button>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    string ADMINISTRATION_ROLE = "Administrators";
+
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+    public List<SampleData> Zariadenie { get; set; }
+    private BSDataTable<SampleData> SortableRef { get; set; }
+
+    SampleData objZariadenie = new SampleData();
+    List<SampleData> ColZariadenie = new List<SampleData>();
+    string Hala1 { get; set; } = "-";
+    string Projnazov;
+
+    // Options to display in the roles dropdown when editing a user
+    List<string> Project = new List<string>() { "" };
+    List<string> Options = new List<string>();
+    // To hold any possible errors
+    string strError = "";
+    // To enable showing the Popup
+    bool ShowPopup = false;
+
+    public class SampleData
+
+    {
+        public string Id { get; set; }
+        public string Projekt { get; set; }
+        public string Zariadenie { get; set; }
+        public string ZarPopis { get; set; }
+        public string Hala { get; set; }
+        public string Udrzbar { get; set; }
+        public string UdrzbaZastupca { get; set; }
+        public string DatPridania { get; set; }
+
+    }
+
+    protected override void OnInitialized() //Test
+    {
+
+        Zariadenie = new List<SampleData>();
+
+        string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+        using var con = new SqlConnection(cs);
+        con.Open();
+
+        string sql = "SELECT * FROM Zariadenia";
+        using var cmd = new SqlCommand(sql, con);
+
+        using SqlDataReader rdr = cmd.ExecuteReader();
+
+
+        while (rdr.Read())
+        {
+            Zariadenie.Add(new SampleData()
+
+            {
+                Id = rdr.GetInt32(0).ToString(),
+                Projekt = rdr.GetString(1),
+                Zariadenie = rdr.GetString(2),
+                ZarPopis = rdr.GetString(3),
+                Hala = rdr.GetString(4),
+                Udrzbar = rdr.GetString(5),
+                UdrzbaZastupca = rdr.GetString(6),
+                DatPridania = rdr.GetString(7),
+
+            }); ;
+        }
+        con.Close();
+
+        ReadProject();
+
+    }
+
+    void ReadProject()
+    {
+        string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+        using var con = new SqlConnection(cs);
+        con.Open();
+
+        string sql = "SELECT * FROM Project";
+        using var proj = new SqlCommand(sql, con);
+
+        using SqlDataReader projre = proj.ExecuteReader();
+
+        foreach (var option in projre)
+        {
+            Project.Add(projre.GetString(1));
+        }
+
+        con.Close();
+    }
+
+    void ProjSele()
+    {
+        string cs = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SDC;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+        using var con = new SqlConnection(cs);
+        con.Open();
+
+        string sql = "SELECT * FROM Project";
+        using var proj = new SqlCommand(sql, con);
+
+        using SqlDataReader projre = proj.ExecuteReader();
+
+        foreach (var option in projre)
+        {
+            if (Hala1 == projre.GetString(1))
+            {
+                Projnazov = projre.GetString(2);
+            }
+        }
+
+        con.Close();
+
+    }
+
+    void AddZariadenie()
+    {
+        // Make new user
+        objZariadenie = new SampleData();
+        //  objUser.PasswordHash = "*****";
+        // Set Id to blank so we know it is a new record
+        objZariadenie.Id = "";
+        // Open the Popup
+        ShowPopup = true;
+    }
+
+    void ClosePopup()
+    {
+        // Close the Popup
+        ShowPopup = false;
+    }
+}
